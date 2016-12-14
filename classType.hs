@@ -16,8 +16,8 @@ isSimple (Succ x) = isSimple x
 
 simplify :: PeanoNumber -> PeanoNumber
 simplify x = let simplefied = simplefyFirst x in
-			 if (isSimple simplefied) then simplefied
-			 else simplify simplefied
+    if (isSimple simplefied) then simplefied
+    else simplify simplefied
 
 eqSimple :: PeanoNumber -> PeanoNumber -> Bool
 eqSimple Zero Zero = True
@@ -46,74 +46,74 @@ signumSimple (Pred _) = Pred Zero
 
 divSimple :: PeanoNumber -> PeanoNumber -> PeanoNumber
 divSimple x y = let t = x - y in
-				if (t < 0)
-					then Zero
-					else (Succ (divSimple t y))
+    if (t < 0)
+        then Zero
+        else (Succ (divSimple t y))
 
 instance Eq PeanoNumber where
-	(==) left right = eqSimple (simplify left) (simplify right)
+    (==) left right = eqSimple (simplify left) (simplify right)
 
 instance Ord PeanoNumber where
-	(<=) left right = leqSimple (simplify left) (simplify right) 
+    (<=) left right = leqSimple (simplify left) (simplify right) 
 
 instance Num PeanoNumber where
-	(+) Zero right = right
-	(+) left Zero = left
-	(+) (Succ left) right = Succ (left + right)
-	(+) (Pred left) right = Pred (left + right)
-	
-	negate Zero = Zero
-	negate (Succ x) = Pred (negate x)
-	negate (Pred x) = Succ (negate x) 
+    (+) Zero right = right
+    (+) left Zero = left
+    (+) (Succ left) right = Succ (left + right)
+    (+) (Pred left) right = Pred (left + right)
+    
+    negate Zero = Zero
+    negate (Succ x) = Pred (negate x)
+    negate (Pred x) = Succ (negate x) 
+    
+    fromInteger x | x == 0 = Zero
+        | x < 0 = Pred (fromInteger (x + 1))
+        | otherwise = Succ (fromInteger (x - 1))
 
-	fromInteger x 	| x == 0 = Zero
-					| x < 0 = Pred (fromInteger (x + 1))
-					| otherwise = Succ (fromInteger (x - 1))
-					
-	signum x = signumSimple (simplify x)
-	
-	abs x = if (signum x < Zero) then negate x else x
+    signum x = signumSimple (simplify x)
+    
+    abs x = if (signum x < Zero) then negate x else x
 
-	(*) Zero _ = Zero
-	(*) _ Zero = Zero
-	(*) (Succ left) right = right + (left * right)
-	(*) (Pred left) right = left*right + (negate right)
-	
+    (*) Zero _ = Zero
+    (*) _ Zero = Zero
+    (*) (Succ left) right = right + (left * right)
+    (*) (Pred left) right = left*right + (negate right)
+
 instance Enum PeanoNumber where
-	toEnum x 	| x == 0 = Zero
-				| x < 0 = Pred (toEnum $ x + 1)
-				| otherwise = Succ (toEnum $ x - 1) 
-	fromEnum Zero = 0
-	fromEnum (Succ left) = (fromEnum left) + 1
-	fromEnum (Pred left) = (fromEnum left) - 1
+    toEnum x | x == 0 = Zero
+     | x < 0 = Pred (toEnum $ x + 1)
+     | otherwise = Succ (toEnum $ x - 1) 
+    fromEnum Zero = 0
+    fromEnum (Succ left) = (fromEnum left) + 1
+    fromEnum (Pred left) = (fromEnum left) - 1
  
 instance Integral PeanoNumber where
-	quotRem left right = let isNeg = (signum left) == (signum right) in
-						let div = divSimple (abs left) (abs right) in
-						if (isNeg) then (div, simplify $ left - div * right) else (negate div, simplify $ left - div * right)
+    quotRem left right = let isNeg = (signum left) == (signum right) in
+        let div = divSimple (abs left) (abs right) in
+        if (isNeg) then (div, simplify $ left - div * right) else (negate div, simplify $ left - div * right)
 
-	toInteger Zero = 0
-	toInteger (Succ left) = (toInteger left) + 1
-	toInteger (Pred left) = (toInteger left) - 1
-	
+    toInteger Zero = 0
+    toInteger (Succ left) = (toInteger left) + 1
+    toInteger (Pred left) = (toInteger left) - 1
+
 instance Real PeanoNumber where
-	toRational x = toRational (toInteger x)
+    toRational x = toRational (toInteger x)
    
 -- main
 test :: String -> String
 test str = 
-	--let x = Succ (Pred (Pred (Succ (Succ Zero)))) in
-	let x = Succ (Succ (Pred (Succ (Succ Zero)))) in
-	let y = Succ (Succ (Succ (Pred Zero))) in
-	--let t = if (x <= y) then True else False in
-	--let t = x + y in
-	--let t = negate x in
-	--let t = fromInteger 3 in
-	--let t = abs (negate x) in	
-	--let t = negate y in
-	--let t =  toEnum 3 in
-	--let t = quotRem x y in
-	let t = toRational x in
-	show $ t
+    --let x = Succ (Pred (Pred (Succ (Succ Zero)))) in
+    let x = Succ (Succ (Pred (Succ (Succ Zero)))) in
+    let y = Succ (Succ (Succ (Pred Zero))) in
+    --let t = if (x <= y) then True else False in
+    --let t = x + y in
+    --let t = negate x in
+    --let t = fromInteger 3 in
+    --let t = abs (negate x) in	
+    --let t = negate y in
+    --let t =  toEnum 3 in
+    --let t = quotRem x y in
+    let t = toRational x in
+    show $ t
 
 main = interact test
